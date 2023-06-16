@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -41,7 +42,7 @@ public class UserService {
 
     public boolean deleteBy(UserDto user) {
         String id = getByDni(user.getDni()).getId();
-        if (getByDni(user.getDni()) != null) {
+        if (Objects.nonNull(getByDni(user.getDni()))) {
             this.userRepository.deleteById(id);
             return true;
         }
