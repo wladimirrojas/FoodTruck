@@ -54,7 +54,4 @@ public class UserServiceTest {
         assertTrue(!response.getName().isEmpty());
     }
 
-
-
-
 }
