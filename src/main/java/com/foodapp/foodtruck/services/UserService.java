@@ -2,6 +2,7 @@ package com.foodapp.foodtruck.services;
 
 import com.foodapp.foodtruck.dto.UserDto;
 import com.foodapp.foodtruck.repository.UserRepository;
+import com.foodapp.foodtruck.utils.EncryptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +31,10 @@ public class UserService {
         return userRepository.getRangeAge(age1, age2);
     }
 
-    public boolean saveUser(UserDto user) {
+    public boolean saveUser(UserDto user) throws Exception {
+        String userDni = EncryptionUtils.encrypt(user.getDni());
         try {
+            user.setDni(userDni);
             userRepository.save(user);
             return true;
         } catch (Exception e) {

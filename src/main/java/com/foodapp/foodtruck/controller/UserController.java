@@ -4,6 +4,7 @@ import com.foodapp.foodtruck.dto.UserDto;
 import com.foodapp.foodtruck.model.Task;
 import com.foodapp.foodtruck.services.TaskService;
 import com.foodapp.foodtruck.services.UserService;
+import com.foodapp.foodtruck.utils.EncryptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -34,11 +36,25 @@ public class UserController {
 
     @GetMapping("/list")
     public ResponseEntity<List<UserDto>> getAllUsers() {
-        return ResponseEntity.ok(userService.findAll());
+        return ResponseEntity.ok(userService.findAll()
+                .stream()
+                .map(user -> {
+                    if (user.getName().equals("Wladimir")) {
+                        String decryptedDni = null;
+                        try {
+                            decryptedDni = EncryptionUtils.decrypt(user.getDni());
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        user.setDni(decryptedDni);
+                    }
+                    return user;
+                })
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/save")
-    public ResponseEntity saveUser(@RequestBody() UserDto userDto) {
+    public ResponseEntity saveUser(@RequestBody() UserDto userDto) throws Exception {
         return ResponseEntity.ok(userService.saveUser(userDto));
     }
 
